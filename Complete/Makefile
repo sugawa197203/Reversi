@@ -5,10 +5,8 @@ INCLUDE=include
 TARGET=Reversi
 LDFLAGS=-lncurses
 
-all: cboard
-
-cboard: clean
-	$(Compiler) -o $(TARGET) $(SRC) -I $(INCLUDE) $(LDFLAGS)
+reversi: clean
+	$(Compiler) -o $(TARGET) $(SRC) -I $(INCLUDE) $(LDFLAGS) -O3
 
 clean:
 	rm -f $(TARGET)
