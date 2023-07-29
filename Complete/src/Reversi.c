@@ -33,6 +33,7 @@ int main()
 	return 0;
 }
 
+// ゲームの終了判定
 int IsGame()
 {
 	if (COUNT_STONE(WhitePlaceableBoard) == 0 && COUNT_STONE(BlackPlaceableBoard) == 0)
@@ -40,6 +41,8 @@ int IsGame()
 	return 1;
 }
 
+// ターンの更新
+// パス判定もする
 Stone UpdateTurn(Stone stone)
 {
 	if (stone == Black && COUNT_STONE(WhitePlaceableBoard) > 0)
@@ -47,15 +50,18 @@ Stone UpdateTurn(Stone stone)
 	else if (stone == White && COUNT_STONE(BlackPlaceableBoard) > 0)
 		return Black;
 	else
-		return stone;
+		return stone; // パス
 }
 
+// スコアの更新
 void UpdateScore()
 {
 	BlackScore = COUNT_STONE(BlackBoard);
 	WhiteScore = COUNT_STONE(WhiteBoard);
 }
 
+// 盤の初期化
+// 石を初期配置にして表示
 void InitBoard()
 {
 	BlackBoard = 0x0000000810000000;
@@ -67,12 +73,13 @@ void InitBoard()
 	PrintBlank();
 	PrintBoard(BlackBoard, Black);
 	PrintBoard(WhiteBoard, White);
-	PrintBoard(Turn == Black ? BlackPlaceableBoard : WhitePlaceableBoard, Placeable);
+	PrintBoard(BlackPlaceableBoard, Placeable); // はじめは黒がおける場所を表示
 
 	PrintTurn(Turn);
 	PrintScore(BlackScore, WhiteScore);
 }
 
+// 石を置く
 int Place(int x, int y, Stone stone)
 {
 	if (!IsPlaceable(x, y, stone))
@@ -108,8 +115,10 @@ int Place(int x, int y, Stone stone)
 	return 0;
 }
 
+// おけるかどうか判定
 int IsPlaceable(int x, int y, Stone stone)
 {
+	// 盤をビットボードに変換
 	Board pos = XY2Board(x, y);
 
 	switch (stone)
@@ -119,10 +128,12 @@ int IsPlaceable(int x, int y, Stone stone)
 	case White:
 		return (WhitePlaceableBoard & pos) ? 1 : 0;
 	default:
+		// error
 		return -1;
 	}
 }
 
+// おける場所の計算
 Board CaluculatePlaceableBoard(Board checkBoard, Board opponent)
 {
 	// 左右の番人
@@ -212,12 +223,14 @@ Board CaluculatePlaceableBoard(Board checkBoard, Board opponent)
 	return result;
 }
 
+// おける場所の更新
 void UpdatePlaceable()
 {
 	BlackPlaceableBoard = CaluculatePlaceableBoard(BlackBoard, WhiteBoard);
 	WhitePlaceableBoard = CaluculatePlaceableBoard(WhiteBoard, BlackBoard);
 }
 
+// borad 全体を指定した方向にずらす
 Board BoardShift(Board board, Direction direction)
 {
 	switch (direction)

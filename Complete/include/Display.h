@@ -4,14 +4,11 @@
 #include "Stone.h"
 #include "Util.h"
 
-#define SET_GREEN_BACK() attrset(COLOR_PAIR(1))
-#define SET_BLACK_CHAR() attrset(COLOR_PAIR(2))
-#define SET_WHITE_CHAR() attrset(COLOR_PAIR(3))
-#define SET_PLACEABLE() attrset(COLOR_PAIR(4))
-#define SET_WHITE_BLACK() attrset(COLOR_PAIR(5))
-#define SET_BLACK_WHITE() attrset(COLOR_PAIR(6))
-#define SET_BLACK() attrset(COLOR_PAIR(7))
-#define SET_WHITE() attrset(COLOR_PAIR(8))
+#define SET_BLACK_CHAR() attrset(COLOR_PAIR(1))
+#define SET_PLACEABLE() attrset(COLOR_PAIR(2))
+#define SET_WHITE_BLACK() attrset(COLOR_PAIR(3))
+#define SET_BLACK() attrset(COLOR_PAIR(4))
+#define SET_WHITE() attrset(COLOR_PAIR(5))
 
 static const char Blank[] = "\
 +---+---+---+---+---+---+---+---+---+\n\

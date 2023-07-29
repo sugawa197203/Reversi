@@ -1,11 +1,13 @@
 #include "Util.h"
 
+// 盤の座標をコンソールの座標に変換
 void XY2ConsolePos(int *x, int *y)
 {
 	*x = *x * 4 + 6;
 	*y = *y * 2 + 3;
 }
 
+// 盤の座標をビットボードにする
 Board XY2Board(int x, int y)
 {
 	// 最上部 bit だけ立てる
@@ -15,6 +17,8 @@ Board XY2Board(int x, int y)
 	return board;
 }
 
+// コンソールの座標を盤の座標にする
+// 失敗(範囲外だったり)すると -1 が返ってくる
 int ConsolePos2XY(int *x, int *y)
 {
 	switch (*x)
