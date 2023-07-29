@@ -1,10 +1,22 @@
 SRC=$(wildcard src/*.c)
 INCLUDE=include
 TARGET=Reversi
-LDFLAGS=-lncurses
+LNCURSES=-lncurses
 
-reversi: clean
-	$(CC) $(SRC) -o $(TARGET) -I $(INCLUDE) $(LDFLAGS) -O3
+build: clean
+	@mkdir build
+	@echo Compile Stone...
+	@$(CC) -c src/Stone.c -I $(INCLUDE) -o build/Stone.o
+	@echo Compile Util...
+	@$(CC) -c src/Util.c -I $(INCLUDE) -o build/Util.o
+	@echo Compile Display...
+	@$(CC) -c src/Display.c -I $(INCLUDE) $(LNCURSES) -o build/Display.o
+	@echo Compile Reversi...
+	@$(CC) src/Reversi.c build/Stone.o build/Util.o build/Display.o -o build/$(TARGET) -I $(INCLUDE) $(LNCURSES)
 
 clean:
-	rm -f $(TARGET)
+	@rm -r build
+
+all:
+	@rm -f ./Reversi
+	@$(CC) $(SRC) -o Reversi -I $(INCLUDE) $(LNCURSES)
