@@ -1,12 +1,10 @@
-Compiler=gcc
-
-SRC=src/Reversi.c
+SRC=$(wildcard src/*.c)
 INCLUDE=include
 TARGET=Reversi
 LDFLAGS=-lncurses
 
 reversi: clean
-	$(Compiler) -o $(TARGET) $(SRC) -I $(INCLUDE) $(LDFLAGS) -O3
+	$(CC) $(SRC) -o $(TARGET) -I $(INCLUDE) $(LDFLAGS) -O3
 
 clean:
 	rm -f $(TARGET)

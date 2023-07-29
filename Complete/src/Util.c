@@ -1,6 +1,6 @@
 #include "Util.h"
 
-void XY2StonePos(int *x, int *y)
+void XY2ConsolePos(int *x, int *y)
 {
 	*x = *x * 4 + 6;
 	*y = *y * 2 + 3;
