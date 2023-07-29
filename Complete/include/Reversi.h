@@ -11,10 +11,10 @@ typedef enum Stone
 typedef unsigned long long Board;
 
 // 置いてある石の場所
-static Board BlackBoard, WhiteBoard;
+Board BlackBoard, WhiteBoard;
 
 // 置ける場所
-static Board BlackPlaceableBoard, WhitePlaceableBoard;
+Board BlackPlaceableBoard, WhitePlaceableBoard;
 
 static Stone Turn;
 

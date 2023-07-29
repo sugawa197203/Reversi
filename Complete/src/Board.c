@@ -7,7 +7,7 @@ void BoardInit()
 	WhiteBoard = 1ul << 27ul | 1ul << 36ul;
 }
 
-Board boardShift(Board board, Direction direction)
+Board BoardShift(Board board, Direction direction)
 {
 	switch (direction)
 	{
@@ -72,13 +72,13 @@ int Place(int x, int y, Stone stone)
 	for (int direction = 0; direction < 8; direction++)
 	{
 		Board tmp = 0ull;
-		Board mask = boardShift(placePos, (Direction)direction);
+		Board mask = BoardShift(placePos, (Direction)direction);
 
 		// 相手の石があったらtmpに追加
 		while (mask != 0ull && ((mask & *opponent) != 0ull))
 		{
 			tmp |= mask;
-			mask = boardShift(mask, (Direction)direction);
+			mask = BoardShift(mask, (Direction)direction);
 		}
 
 		// 挟んでたらreverseに追加

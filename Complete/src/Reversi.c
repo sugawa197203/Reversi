@@ -7,7 +7,7 @@ int main()
 	int x, y;
 	Turn = White; // 先手は黒だけど、UpdateTurnで黒になる
 
-	PrinterInit();
+	InitDisplay();
 	BoardInit();
 	loop
 	{

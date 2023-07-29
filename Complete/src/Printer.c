@@ -4,7 +4,7 @@
 #include "Printer.h"
 #include "Util.h"
 
-void PrinterInit()
+void InitDisplay()
 {
 	initscr();						   // ncursesの初期化
 	noecho();						   // 入力された文字を表示しない

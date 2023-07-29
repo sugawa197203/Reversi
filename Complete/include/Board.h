@@ -19,4 +19,4 @@ int Place(int x, int y, Stone stone);
 int IsPlaceable(int x, int y, Stone stone);
 Board CaluculatePlaceableBoard(Board checkBoard, Board opponent);
 void UpdatePlaceable();
-Board boardShift(Board board, Direction direction);
+Board BoardShift(Board board, Direction direction);

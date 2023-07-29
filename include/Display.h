@@ -1,9 +1,19 @@
 #pragma once
 
-#include "Reversi.h"
+#include <ncurses.h>
+#include "Stone.h"
 #include "Util.h"
 
-#define BLANK_BOARD "\
+#define SET_GREEN_BACK() attrset(COLOR_PAIR(1))
+#define SET_BLACK_CHAR() attrset(COLOR_PAIR(2))
+#define SET_WHITE_CHAR() attrset(COLOR_PAIR(3))
+#define SET_PLACEABLE() attrset(COLOR_PAIR(4))
+#define SET_WHITE_BLACK() attrset(COLOR_PAIR(5))
+#define SET_BLACK_WHITE() attrset(COLOR_PAIR(6))
+#define SET_BLACK() attrset(COLOR_PAIR(7))
+#define SET_WHITE() attrset(COLOR_PAIR(8))
+
+static const char Blank[] = "\
 +---+---+---+---+---+---+---+---+---+\n\
 |   | A | B | C | D | E | F | G | H |\n\
 +---+---+---+---+---+---+---+---+---+\n\
@@ -22,15 +32,15 @@
 | 7 |   |   |   |   |   |   |   |   |\n\
 +---+---+---+---+---+---+---+---+---+\n\
 | 8 |   |   |   |   |   |   |   |   |\n\
-+---+---+---+---+---+---+---+---+---+"
++---+---+---+---+---+---+---+---+---+";
 
 void InitDisplay();
-void PrintBoard(Stone placeabletarget);
+void PrintBoard(Board board, Stone stone);
 void PrintStone(int x, int y, Stone stone);
-void PrintBrank();
+void PrintBlank();
 void PrintTurn(Stone stone);
-void PrintScore();
-void PrinterDispose();
+void PrintScore(int black, int white);
+void DisposeDisplay();
 
 void GetMousePos(int *x, int *y);
-void PrintResult();
+void PrintResult(int black, int white);
