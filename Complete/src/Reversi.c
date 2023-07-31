@@ -1,63 +1,46 @@
 #include "Reversi.h"
 
+void InitBoard();
+Board CaluculatePlaceableBoard(Board checkBoard, Board opponent); // プロトタイプ宣言
+void UpdatePlaceable();											  // プロトタイプ宣言
+void UpdateScore();												  // プロトタイプ宣言
+int IsPlaceable(int x, int y, Stone stone);						  // プロトタイプ宣言
+Board BoardShift(Board board, Direction direction);				  // プロトタイプ宣言
+int Place(int x, int y, Stone stone);							  // プロトタイプ宣言
+Stone UpdateTurn(Stone stone);									  // プロトタイプ宣言
+int IsGame();													  // プロトタイプ宣言
+
 int main()
 {
 	int x, y;
 	InitDisplay();
-	InitBoard();
+
+	InitBoard(); // 盤の初期化
 
 	while (IsGame())
 	{
 		do
 		{
 			GetMousePos(&x, &y);
-		} while (Place(x, y, Turn) != 0);
+		} while (Place(x, y, Turn) != 0); // 置けるまでループ
 
-		UpdatePlaceable();
-		UpdateScore();
-		Turn = UpdateTurn(Turn);
-
-		PrintTurn(Turn);
-		PrintScore(BlackScore, WhiteScore);
+		UpdatePlaceable();		 // 置ける場所の更新
+		Turn = UpdateTurn(Turn); // ターンの更新
+		PrintTurn(Turn);		 // ターンの表示
 
 		PrintBlank();
 		PrintBoard(BlackBoard, Black);
 		PrintBoard(WhiteBoard, White);
-		PrintBoard(Turn == Black ? BlackPlaceableBoard : WhitePlaceableBoard, Placeable);
+		PrintBoard(Turn == Black ? BlackPlaceableBoard : WhitePlaceableBoard, Placeable); // 置ける場所の表示
+
+		UpdateScore();						// スコアの更新
+		PrintScore(BlackScore, WhiteScore); // スコアの表示
 	}
 
-	PrintResult(BlackScore, WhiteScore);
+	PrintResult(BlackScore, WhiteScore); // 結果の表示
 
 	DisposeDisplay();
-
 	return 0;
-}
-
-// ゲームの終了判定
-int IsGame()
-{
-	if (COUNT_STONE(WhitePlaceableBoard) == 0 && COUNT_STONE(BlackPlaceableBoard) == 0)
-		return 0;
-	return 1;
-}
-
-// ターンの更新
-// パス判定もする
-Stone UpdateTurn(Stone stone)
-{
-	if (stone == Black && COUNT_STONE(WhitePlaceableBoard) > 0)
-		return White;
-	else if (stone == White && COUNT_STONE(BlackPlaceableBoard) > 0)
-		return Black;
-	else
-		return stone; // パス
-}
-
-// スコアの更新
-void UpdateScore()
-{
-	BlackScore = COUNT_STONE(BlackBoard);
-	WhiteScore = COUNT_STONE(WhiteBoard);
 }
 
 // 盤の初期化
@@ -79,68 +62,14 @@ void InitBoard()
 	PrintScore(BlackScore, WhiteScore);
 }
 
-// 石を置く
-int Place(int x, int y, Stone stone)
-{
-	if (!IsPlaceable(x, y, stone))
-		return -1;
-
-	Board placePos = XY2Board(x, y);
-	Board *opponent = stone == Black ? &WhiteBoard : &BlackBoard;
-	Board *me = stone == Black ? &BlackBoard : &WhiteBoard;
-	Board reverse = 0ull;
-
-	// 8方向
-	for (int direction = 0; direction < 8; direction++)
-	{
-		Board tmp = 0ull;
-		Board mask = BoardShift(placePos, (Direction)direction);
-
-		// 相手の石があったらtmpに追加
-		while (mask != 0ull && ((mask & *opponent) != 0ull))
-		{
-			tmp |= mask;
-			mask = BoardShift(mask, (Direction)direction);
-		}
-
-		// 挟んでたらreverseに追加
-		if ((mask & *me) != 0ull)
-			reverse |= tmp;
-	}
-
-	// ひっくり返す
-	*me ^= placePos | reverse;
-	*opponent ^= reverse;
-
-	return 0;
-}
-
-// おけるかどうか判定
-int IsPlaceable(int x, int y, Stone stone)
-{
-	// 盤をビットボードに変換
-	Board pos = XY2Board(x, y);
-
-	switch (stone)
-	{
-	case Black:
-		return (BlackPlaceableBoard & pos) ? 1 : 0;
-	case White:
-		return (WhitePlaceableBoard & pos) ? 1 : 0;
-	default:
-		// error
-		return -1;
-	}
-}
-
 // おける場所の計算
 Board CaluculatePlaceableBoard(Board checkBoard, Board opponent)
 {
-	// 左右の番人
+	// 左右のマスク
 	Board horizon = opponent & 0x7e7e7e7e7e7e7e7eul;
-	// 上下の番人
+	// 上下のマスク
 	Board vertical = opponent & 0x00FFFFFFFFFFFF00ul;
-	// 全辺の番人
+	// 全辺のマスク
 	Board allSide = opponent & 0x007e7e7e7e7e7e00ul;
 	// 空いてる場所
 	Board blank = ~(checkBoard | opponent);
@@ -223,11 +152,33 @@ Board CaluculatePlaceableBoard(Board checkBoard, Board opponent)
 	return result;
 }
 
-// おける場所の更新
+// 置ける場所の更新
 void UpdatePlaceable()
 {
 	BlackPlaceableBoard = CaluculatePlaceableBoard(BlackBoard, WhiteBoard);
 	WhitePlaceableBoard = CaluculatePlaceableBoard(WhiteBoard, BlackBoard);
+}
+
+// スコアの更新
+void UpdateScore()
+{
+	BlackScore = __builtin_popcountll(BlackBoard);
+	WhiteScore = __builtin_popcountll(WhiteBoard);
+}
+
+// 置けるかどうか判定
+int IsPlaceable(int x, int y, Stone stone)
+{
+	// 盤をビットボードに変換
+	Board pos = XY2Board(x, y);
+
+	switch (stone)
+	{
+	case Black:
+		return (BlackPlaceableBoard & pos) ? 1 : 0;
+	case White:
+		return (WhitePlaceableBoard & pos) ? 1 : 0;
+	}
 }
 
 // borad 全体を指定した方向にずらす
@@ -251,7 +202,61 @@ Board BoardShift(Board board, Direction direction)
 		return (board << 1) & 0xfefefefefefefefe;
 	case UpLeft:
 		return (board << 9) & 0xfefefefefefefe00;
-	default:
-		return 0;
 	}
+}
+
+// 石を置く
+int Place(int x, int y, Stone stone)
+{
+	if (!IsPlaceable(x, y, stone))
+		return -1;
+
+	Board placePos = XY2Board(x, y);							  // 置く場所
+	Board *opponent = stone == Black ? &WhiteBoard : &BlackBoard; // 相手の石
+	Board *me = stone == Black ? &BlackBoard : &WhiteBoard;		  // 自分の石
+	Board reverse = 0ull;										  // ひっくり返す石
+
+	// 8方向
+	for (int direction = 0; direction < 8; direction++)
+	{
+		Board tmp = 0ull;
+		Board mask = BoardShift(placePos, (Direction)direction);
+
+		// 相手の石があったらtmpに追加
+		while (mask != 0ull && ((mask & *opponent) != 0ull))
+		{
+			tmp |= mask;
+			mask = BoardShift(mask, (Direction)direction);
+		}
+
+		// 挟んでたらreverseに追加
+		if ((mask & *me) != 0ull)
+			reverse |= tmp;
+	}
+
+	// ひっくり返す
+	*me ^= placePos | reverse;
+	*opponent ^= reverse;
+
+	return 0;
+}
+
+// ターンの更新
+// パス判定もする
+Stone UpdateTurn(Stone stone)
+{
+	if (stone == Black && __builtin_popcountll(WhitePlaceableBoard) > 0)
+		return White;
+	else if (stone == White && __builtin_popcountll(BlackPlaceableBoard) > 0)
+		return Black;
+	else
+		return stone; // パス
+}
+
+// ゲームの終了判定
+int IsGame()
+{
+	if (__builtin_popcountll(WhitePlaceableBoard) == 0 && __builtin_popcountll(BlackPlaceableBoard) == 0)
+		return 0;
+	return 1;
 }

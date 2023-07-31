@@ -4,11 +4,10 @@ enum STONE
 {
 	Black,
 	White,
-	Empty,
 	Placeable
 };
 
-typedef enum Direction
+enum DIRECTION
 {
 	Up,
 	UpRight,
@@ -18,7 +17,9 @@ typedef enum Direction
 	DownLeft,
 	Left,
 	UpLeft
-} Direction;
+};
+
+typedef enum DIRECTION Direction;
 
 typedef enum STONE Stone;
 typedef unsigned long long Board;

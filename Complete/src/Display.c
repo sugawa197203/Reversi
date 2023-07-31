@@ -1,6 +1,5 @@
 #include "Display.h"
 
-// 初期化
 void InitDisplay()
 {
 	initscr();						   // ncursesの初期化
@@ -11,26 +10,48 @@ void InitDisplay()
 
 	start_color();
 	init_pair(1, COLOR_BLACK, COLOR_GREEN); // 盤面用
-	init_pair(2, COLOR_CYAN, COLOR_GREEN);	// 置ける場所用
-	init_pair(3, COLOR_WHITE, COLOR_BLACK); // 情報表示用
-	init_pair(4, COLOR_BLACK, COLOR_BLACK); // 黒石用
-	init_pair(5, COLOR_WHITE, COLOR_WHITE); // 白石用
+	init_pair(2, COLOR_BLACK, COLOR_BLACK); // 黒石用
+	init_pair(3, COLOR_WHITE, COLOR_WHITE); // 白石用
+	init_pair(4, COLOR_CYAN, COLOR_GREEN);	// 置ける場所用
+	init_pair(5, COLOR_WHITE, COLOR_BLACK); // 情報表示用
 }
 
 // 石が置かれていない盤を表示
 void PrintBlank()
 {
-	SET_BLACK_CHAR();
+	attrset(COLOR_PAIR(1));
 	mvprintw(0, 0, Blank);
 }
 
 // 終了処理
 void DisposeDisplay()
 {
-	int ch;
-	while ((ch = getch()) != 'q')
+	while (getch() != 'q')
 		;
 	endwin();
+}
+
+// 盤の x, y に stone を表示
+// stone が Placeable なら 置ける場所を表示
+void PrintStone(int x, int y, Stone stone)
+{
+	XY2ConsolePos(&x, &y);
+
+	switch (stone)
+	{
+	case Black:
+		attrset(COLOR_PAIR(2));
+		mvprintw(y, x, " ");
+		break;
+	case White:
+		attrset(COLOR_PAIR(3));
+		mvprintw(y, x, " ");
+		break;
+	case Placeable:
+		attrset(COLOR_PAIR(4));
+		mvprintw(y, x, "*");
+		break;
+	}
 }
 
 // board を stone として表示
@@ -52,57 +73,16 @@ void PrintBoard(Board board, Stone stone)
 	}
 }
 
-// 盤の x, y に stone を表示
-// stone が Placeable なら 置ける場所を表示
-void PrintStone(int x, int y, Stone stone)
-{
-	XY2ConsolePos(&x, &y);
-
-	switch (stone)
-	{
-	case Black:
-		SET_BLACK();
-		mvprintw(y, x, " ");
-		break;
-	case White:
-		SET_WHITE();
-		mvprintw(y, x, " ");
-		break;
-	case Placeable:
-		SET_PLACEABLE();
-		mvprintw(y, x, "*");
-		break;
-	}
-}
-
-// ターンの情報を表示
-void PrintTurn(Stone stone)
-{
-	SET_WHITE_BLACK();
-	switch (stone)
-	{
-	case Black:
-		mvprintw(20, 0, "Turn: Black");
-		break;
-	case White:
-		mvprintw(20, 0, "Turn: White");
-		break;
-	default:
-		// error
-		break;
-	}
-}
-
 // スコアを表示
 void PrintScore(int black, int white)
 {
-	SET_WHITE_BLACK();
+	attrset(COLOR_PAIR(5));
 	mvprintw(22, 0, "Black: %d", black);
 	mvprintw(23, 0, "White: %d", white);
 }
 
 // マウスがクリックしたコンソールの座標を取得
-// 盤の石をおける場所まで繰り返す
+// 盤の石を置ける場所をクリックするまで繰り返す
 void GetMousePos(int *x, int *y)
 {
 	MEVENT event;
@@ -112,26 +92,45 @@ void GetMousePos(int *x, int *y)
 	{
 		ch = getch();
 
+		// マウスのクリックか判定 (キーボードの可能性がある)
 		if (ch != KEY_MOUSE)
 		{
 			continue;
 		}
 
+		// マウスのイベントを取得
 		if (getmouse(&event) != OK)
 		{
 			continue;
 		}
 
+		// マウスのイベントからコンソールのどこをクリックしたかを取得
 		*x = event.x;
 		*y = event.y;
 
+		// 盤の石を置ける場所をクリックしたか判定
 	} while (ConsolePos2XY(x, y));
+}
+
+// ターンの情報を表示
+void PrintTurn(Stone stone)
+{
+	attrset(COLOR_PAIR(5));
+	switch (stone)
+	{
+	case Black:
+		mvprintw(20, 0, "Turn: Black");
+		break;
+	case White:
+		mvprintw(20, 0, "Turn: White");
+		break;
+	}
 }
 
 // 結果の表示
 void PrintResult(int black, int white)
 {
-	SET_WHITE_BLACK();
+	attrset(COLOR_PAIR(5));
 	if (black > white)
 		mvprintw(20, 0, "Black Win! ");
 	else if (black < white)

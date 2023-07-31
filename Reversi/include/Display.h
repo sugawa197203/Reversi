@@ -1,4 +1,4 @@
-
+#pragma once
 
 static const char Blank[] = "\
 +---+---+---+---+---+---+---+---+---+\n\
